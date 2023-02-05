@@ -2,17 +2,21 @@
 using Expire_Api.Interface;
 using Expire_Api.Models;
 using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace Expire_Api.Services
 {
     public class MarketService : BaseRepository<Market>, IMarketService
     {
         private readonly UserManager<Seller> _userManager;
-        public MarketService(ApplicationDbContext Context, UserManager<Seller> userManager) : base(Context)
+        private readonly ISellerService _sellerService;
+        public MarketService(ApplicationDbContext Context, UserManager<Seller> userManager, ISellerService sellerService) : base(Context)
         {
             _userManager = userManager;
+            _sellerService = sellerService;
         }
 
         //public async Task<Market> GetById(int id)
@@ -24,7 +28,7 @@ namespace Expire_Api.Services
 
         public async Task<Market> FindByIdWithData(int id)
         {
-            Expression<Func<Market, bool>> criteria = d => d.Id == id;
+            Expression<Func<Market, bool>> criteria = d => d.Id == id;  
             var market = await FindWithData(criteria);
             if (market == null) return null;
             return market;
@@ -46,84 +50,71 @@ namespace Expire_Api.Services
             return markets;
         }
 
-        public async Task<Market> AddMarket(PostMarketDto marketDto)
+        public async Task<ReturnMarket> AddMarket(PostMarketDto marketDto)
         {
-            var seller = await _userManager.FindByIdAsync(marketDto.SellerId);
-            if (seller == null) return new Market { Id = 0 };
-            var market = new Market
+            var returnMarket = new ReturnMarket { Messege= string.Empty };
+            var seller = await _sellerService.FindSellerByIdWithData(marketDto.SellerId);
+            if (seller == null) returnMarket.Messege = "Cant't Find Seller with this id";
+            else
             {
-                Name = marketDto.Name,
-                SellerId = marketDto.SellerId
-            };
-            var result = await Add(market);
-            CommitChanges();
-            return result;
+                var marketsOfUser = seller.Markets;
+                if (marketsOfUser is not null && marketsOfUser.Any(m => m.Name.Equals(marketDto.Name)))
+                {
+                    returnMarket.Messege = "There is another market with the same name!";
+                }
+                else
+                {
+                    var market = new Market
+                    {
+                        Name = marketDto.Name,
+                        SellerId = marketDto.SellerId
+                    };
+                    var result = await Add(market);
+                    CommitChanges();
+                    returnMarket.Market = market;
+                }
+            }
+            return returnMarket;
         }
-
+        public async Task<ReturnMarket> MarketValidation(string SellerId , int MarketId , [Optional] string Name)
+        {
+            var returnValidation = new ReturnMarket
+            {
+                Messege = "Cant't Find Market with this id"
+            };
+            var seller = await _userManager.FindByIdAsync(SellerId);
+            var market = await FindById(MarketId);
+            if (seller == null) returnValidation.Messege = "Cant't Find Seller with this id";
+            else if (market is not null)
+            {
+                returnValidation.Market = market;
+                if (market.SellerId != SellerId) returnValidation.Messege = "This Market belongs to another seller!";
+                else if (Name is not null && market.Name == Name) returnValidation.Messege = "No Changes are Found";
+                else returnValidation.Messege = string.Empty;
+            }
+            return returnValidation;
+        }
         public async Task<ReturnMarket> UpdateMarket(UpdateMarketDto marketDto)
         {
-            var returnMarket = new ReturnMarket
+            var validate = await MarketValidation(marketDto.SellerId,marketDto.MarketId,marketDto.Name);
+            if (validate.Messege == string.Empty && validate.Market is not null)
             {
-                Market = new Market { },
-                Messege = String.Empty
-            };
-            var seller = await _userManager.FindByIdAsync(marketDto.SellerId);
-            if (seller == null)
-            {
-                returnMarket.Messege = "Cant't Find Seller with this id";
-                return returnMarket;
+                validate.Market.Name = marketDto.Name;
+                await Update(validate.Market);
+                CommitChanges();
             }
-            var market = await FindById(marketDto.MarketId);
-            if (market == null)
-            {
-                returnMarket.Messege = "Cant't Find Market with this id";
-                return returnMarket;
-            }
-            if (market.SellerId != marketDto.SellerId)
-            {
-                returnMarket.Messege = "This Market belongs to another seller!";
-                return returnMarket;
-            }
-            if (market.Name == marketDto.Name)
-            {
-                returnMarket.Messege = "No Changes are Found";
-                return returnMarket;
-            }
-            market.Name = marketDto.Name;
-            var result = await Update(market);
-            CommitChanges();
-            returnMarket.Market = market;
-            return returnMarket; 
+            return validate; 
         }
-
         public async Task<ReturnMarket> DeleteMarket(DeleteMarketDto marketDto)
         {
-            var returnMarket = new ReturnMarket
+            var validate = await MarketValidation(marketDto.SellerId, marketDto.MarketId);
+
+            if (validate.Messege == string.Empty && validate.Market is not null)
             {
-                Market = new Market { },
-                Messege = String.Empty
-            };
-            var seller = await _userManager.FindByIdAsync(marketDto.SellerId);
-            if (seller == null)
-            {
-                returnMarket.Messege = "Cant't Find Seller with this id";
-                return returnMarket;
+                await Delete(validate.Market);
+                CommitChanges();
             }
-            var market = await FindById(marketDto.MarketId);
-            if (market == null)
-            {
-                returnMarket.Messege = "Cant't Find Market with this id";
-                return returnMarket;
-            }
-            if (market.SellerId != marketDto.SellerId)
-            {
-                returnMarket.Messege = "This Market belongs to another seller!";
-                return returnMarket;
-            }
-            var result = await Delete(market);
-            CommitChanges();
-            returnMarket.Market = market;
-            return returnMarket;
+            return validate;
         }
     }
 }
