@@ -4,6 +4,8 @@ using Expire_Api.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Expire_Api.Mapping;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,7 +31,6 @@ builder.Services.AddIdentity<Seller, IdentityRole>()
 
 builder.Services.AddScoped<ISellerService, SellerService>();
 builder.Services.AddScoped<IMarketService, MarketService>();
-
 
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>

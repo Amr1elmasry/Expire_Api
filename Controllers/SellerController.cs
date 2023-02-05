@@ -58,5 +58,20 @@ namespace Expire_Api.Controllers
 
             return Ok($"Role {Name} added successfully");
         }
+
+        [HttpGet("GetSellerById")]
+        public async Task<IActionResult> GetSellerById(string sellerId)
+        {
+            var seller = await _sellerService.FindSellerById(sellerId);
+            if (seller is null) return BadRequest("No seller was found");
+            return Ok(seller);
+        }
+        [HttpGet("GetSellerByIdWithData")]
+        public async Task<IActionResult> GetSellerByIdWithData(string sellerId)
+        {
+            var seller = await _sellerService.FindSellerByIdWithData(sellerId);
+            if (seller is null) return BadRequest("No seller was found");
+            return Ok(seller);
+        }
     }
 }

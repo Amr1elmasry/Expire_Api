@@ -1,8 +1,10 @@
 ﻿using Expire_Api.DTOS.Market;
 using Expire_Api.Interface;
 using Expire_Api.Models;
+using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections;
 
 namespace Expire_Api.Controllers
 {
@@ -11,7 +13,6 @@ namespace Expire_Api.Controllers
     public class MarketController : ControllerBase
     {
         private readonly IMarketService _marketService;
-
         public MarketController(IMarketService marketService)
         {
             _marketService = marketService;
@@ -22,7 +23,8 @@ namespace Expire_Api.Controllers
         {
             var markets = await _marketService.GetAll();
             if (markets== null) return NotFound("No Markets are found");
-            return Ok(markets);
+            var result = markets.Adapt<IEnumerable<MarketDto>>();
+            return Ok(result);
         }
 
         [HttpGet("GetAllWithData")]
@@ -30,23 +32,26 @@ namespace Expire_Api.Controllers
         {
             var markets = await _marketService.GetAllWithData();
             if (markets == null) return NotFound("No Markets are found");
-            return Ok(markets);
+            var result = markets.Adapt<IEnumerable<MarketDto>>();
+            return Ok(result);
         }
 
         [HttpGet("FindById")]
         public async Task<IActionResult> FindById(int marketId)
         {
-            var markets = await _marketService.FindById(marketId);
-            if (markets == null) return NotFound("No Markets are found");
-            return Ok(markets);
+            var market = await _marketService.FindById(marketId);
+            if (market == null) return NotFound("No Markets are found");
+            var result = market.Adapt<MarketDto>();
+            return Ok(result);
         }
 
         [HttpGet("FindByIdWithData")]
         public async Task<IActionResult> FindByIdWithData(int marketId)
         {
-            var markets = await _marketService.FindByIdWithData(marketId);
-            if (markets == null) return NotFound("No Markets are found");
-            return Ok(markets);
+            var market = await _marketService.FindByIdWithData(marketId);
+            if (market == null) return NotFound("No Markets are found");
+            var result = market.Adapt<MarketDto>();
+            return Ok(result);
         }
 
         [HttpGet("GetMarketsOfSeller")]
@@ -54,7 +59,8 @@ namespace Expire_Api.Controllers
         {
             var markets = await _marketService.GetMarketsOfSeller(sellerId);
             if (markets == null) return NotFound("No Markets are found");
-            return Ok(markets);
+            var result = markets.Adapt<IEnumerable<MarketDto>>();
+            return Ok(result);
         }       
 
         [HttpGet("GetMarketsOfSellerWithData")]
@@ -62,7 +68,8 @@ namespace Expire_Api.Controllers
         {
             var markets = await _marketService.GetMarketsOfSellerWithData(sellerId);
             if (markets == null) return NotFound("No Markets are found");
-            return Ok(markets);
+            var result = markets.Adapt<IEnumerable<MarketDto>>();
+            return Ok(result);
         }
 
 
@@ -72,8 +79,9 @@ namespace Expire_Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var market = await _marketService.AddMarket(marketDto);
-            if (market.Id == 0) return BadRequest("Cant't Find Seller with this id");
-            return Ok(market);
+            if (market.Market is null || market.Messege != string.Empty) return BadRequest(market.Messege);
+            var result = market.Market.Adapt<MarketDto>();
+            return Ok(result);
         }
 
         [HttpPut("UpdateMarket")]
@@ -83,7 +91,8 @@ namespace Expire_Api.Controllers
                 return BadRequest(ModelState);
             var market = await _marketService.UpdateMarket(marketDto);
             if (market.Messege != string.Empty) return BadRequest(market.Messege);
-            return Ok(market.Market);
+            var result = market.Market.Adapt<MarketDto>();
+            return Ok(result);
         }
 
         [HttpDelete("DeleteMarket")]
@@ -93,7 +102,8 @@ namespace Expire_Api.Controllers
                 return BadRequest(ModelState);
             var market = await _marketService.DeleteMarket(marketDto);
             if (market.Messege != string.Empty) return BadRequest(market.Messege);
-            return Ok(market.Market);
+            var result = market.Market.Adapt<MarketDto>();
+            return Ok(result);
         }
     }
 }
