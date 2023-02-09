@@ -1,7 +1,9 @@
-﻿using Expire_Api.DTOS.Market;
+﻿using Expire_Api.Classes;
+using Expire_Api.DTOS.Market;
 using Expire_Api.Interface;
 using Expire_Api.Models;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
@@ -18,6 +20,7 @@ namespace Expire_Api.Controllers
             _marketService = marketService;
         }
 
+        
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
@@ -26,7 +29,7 @@ namespace Expire_Api.Controllers
             var result = markets.Adapt<IEnumerable<MarketDto>>();
             return Ok(result);
         }
-
+        
         [HttpGet("GetAllWithData")]
         public async Task<IActionResult> GetAllWithData()
         {

@@ -18,7 +18,7 @@ namespace Expire_Api.Models
         public Gender? Gender { get; set; }
 
         [Required]
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         [Required]
         [DefaultValue(true)]
