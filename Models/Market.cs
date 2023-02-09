@@ -16,6 +16,7 @@ namespace Expire_Api.Models
         public string? Name { get; set; }
 
         public ICollection<Product> Products { get; set; }
+        public ICollection<Category> Categories { get; set; }
         public Seller Seller { get; set; }
         public string SellerId { get; set; }
     }

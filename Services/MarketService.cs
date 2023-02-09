@@ -53,7 +53,7 @@ namespace Expire_Api.Services
         public async Task<ReturnMarket> AddMarket(PostMarketDto marketDto)
         {
             var returnMarket = new ReturnMarket { Messege= string.Empty };
-            var seller = await _sellerService.FindSellerByIdWithData(marketDto.SellerId);
+            var seller = await _sellerService.FindByIdWithData(marketDto.SellerId);
             if (seller == null) returnMarket.Messege = "Cant't Find Seller with this id";
             else
             {

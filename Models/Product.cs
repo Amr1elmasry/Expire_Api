@@ -14,6 +14,7 @@ namespace Expire_Api.Models
         [Required]
         public string Name { get; set; }
 
+        public string BarCode { get; set; }
         public double Price { get; set; }
 
         [Required]

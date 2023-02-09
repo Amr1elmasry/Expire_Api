@@ -16,5 +16,6 @@ namespace Expire_Api.Interface
         Task<ReturnMarket> UpdateMarket(UpdateMarketDto marketDto);
         Task<ReturnMarket> DeleteMarket(DeleteMarketDto marketDto);
         Task<ReturnMarket> MarketValidation(string SellerId, int MarketId, [Optional] string Name);
+        
     }
 }

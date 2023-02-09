@@ -5,6 +5,9 @@ namespace Expire_Api.Interface
     public interface IBaseRepository<T>
     {
         Task<T> FindById(int id);
+        Task<T> FindByIdWithData(int id);        
+        Task<T> FindById(string id);
+        Task<T> FindByIdWithData(string id);
         Task<T> Add(T entity);
         Task<T> Update(T entity);
         Task<T> Delete(T entity);

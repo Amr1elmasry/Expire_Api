@@ -46,6 +46,45 @@ namespace Expire_Api.Services
             return entity;
 
         }
+        public async Task<T> FindByIdWithData(int id)
+        {
+            var col = GetCollections(typeof(T));
+            var entry = await FindById(id);
+            var re =  _Context.Entry(entry);
+            IQueryable<T> query = _Context.Set<T>();
+            foreach (var inc in col)
+            {
+                query = query.Include(inc).AsQueryable();
+            }
+            var entity = await query.Where(d=>d.Equals(entry)).SingleOrDefaultAsync();
+            if (entity == null) return null;
+            _Context.Entry(entity).State = EntityState.Detached;
+            return entity;
+        }
+
+        public async Task<T> FindById(string id)
+        {
+            var entity = await _Context.Set<T>().FindAsync(id);
+            if (entity == null) return null;
+            _Context.Entry(entity).State = EntityState.Detached;
+            return entity;
+
+        }
+        public async Task<T> FindByIdWithData(string id)
+        {
+            var col = GetCollections(typeof(T));
+            var entry = await FindById(id);
+            var re = _Context.Entry(entry);
+            IQueryable<T> query = _Context.Set<T>();
+            foreach (var inc in col)
+            {
+                query = query.Include(inc).AsQueryable();
+            }
+            var entity = await query.Where(d => d.Equals(entry)).SingleOrDefaultAsync();
+            if (entity == null) return null;
+            _Context.Entry(entity).State = EntityState.Detached;
+            return entity;
+        }
 
         public async Task<int> Count()
         {
@@ -66,7 +105,7 @@ namespace Expire_Api.Services
         public async Task<T> Find(Expression<Func<T, bool>> criteria)
         {
 
-            var result = await _Context.Set<T>().AsQueryable().AsNoTracking().FirstOrDefaultAsync();
+            var result = await _Context.Set<T>().AsQueryable().AsNoTracking().FirstOrDefaultAsync(criteria);
             if (result == null) return null;
             _Context.Entry(result).State = EntityState.Detached;
             return result;

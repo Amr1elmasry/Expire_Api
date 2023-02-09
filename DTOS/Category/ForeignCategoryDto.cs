@@ -1,14 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Expire_Api.DTOS.Market;
+using Expire_Api.DTOS.Seller;
+using Expire_Api.Models;
+using System.ComponentModel.DataAnnotations;
 
-namespace Expire_Api.Models
+namespace Expire_Api.DTOS.Category
 {
-    public class Category
+    public class ForeignCategoryDto
     {
-        public Category()
-        {
-            Products = new HashSet<Product>();
-        }
-
         [Required]
         public int Id { get; set; }
 
@@ -16,10 +14,7 @@ namespace Expire_Api.Models
         public string? Name { get; set; }
         public ICollection<Product> Products { get; set; }
 
-        public Market Market { get; set; }
         public int MarketId { get; set; }
-        public Seller Seller { get; set; }
         public string SellerId { get; set; }
-
     }
 }
