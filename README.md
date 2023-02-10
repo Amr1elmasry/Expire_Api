@@ -12,6 +12,13 @@ POST /api/Auth/Login
 POST /api/Auth/AddNewRole
  ```
 
+## Product
+```http
+GET /api/Product/GetProductsInMarket
+GET /api/Product/GetProductsInMarketWithData
+POST /api/Product/AddProductToMarket
+```
+
 ## Category
 ```http
 GET /api/Category/GetAll
