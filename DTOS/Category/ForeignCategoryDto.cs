@@ -12,8 +12,6 @@ namespace Expire_Api.DTOS.Category
 
         [Required, MaxLength(100)]
         public string? Name { get; set; }
-        public ICollection<Product> Products { get; set; }
-
         public int MarketId { get; set; }
         public string SellerId { get; set; }
     }

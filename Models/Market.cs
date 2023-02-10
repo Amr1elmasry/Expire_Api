@@ -4,10 +4,6 @@ namespace Expire_Api.Models
 {
     public class Market
     {
-        public Market()
-        {
-            Products = new HashSet<Product>();
-        }
 
         [Required]
         public int Id { get; set; }

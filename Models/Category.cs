@@ -4,10 +4,6 @@ namespace Expire_Api.Models
 {
     public class Category
     {
-        public Category()
-        {
-            Products = new HashSet<Product>();
-        }
 
         [Required]
         public int Id { get; set; }

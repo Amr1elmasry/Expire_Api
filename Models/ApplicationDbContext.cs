@@ -19,6 +19,10 @@ namespace Expire_Api.Models
 
                 m.ToTable("Sellers");
             });
+            modelBuilder.Entity<Product>().Property(p => p.CurrencyCode)
+                .HasConversion<string>()
+                .HasDefaultValue(CurrencyCode.EGP);
+
             modelBuilder.Entity<ApplicationUser>().ToTable("Users");
             modelBuilder.Entity<IdentityRole>().ToTable("Roles");
             modelBuilder.Entity<IdentityUserRole<string>>().ToTable("UserRoles");

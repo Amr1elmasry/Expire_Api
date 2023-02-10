@@ -1,8 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Expire_Api.DTOS.Category;
+using Expire_Api.DTOS.Market;
+using Expire_Api.Models;
+using System.ComponentModel.DataAnnotations;
 
-namespace Expire_Api.Models
+namespace Expire_Api.DTOS.Product
 {
-    public class Product
+    public class ForeignProductDto
     {
         [Required]
         public int Id { get; set; }
@@ -14,13 +17,10 @@ namespace Expire_Api.Models
         public double Price { get; set; }
 
         [Required]
-        public CurrencyCode CurrencyCode { get; set; }
+        public CurrencyCode Currency { get; set; }
         public int Quantity { get; set; }
 
-        public Category Category { get; set; }
         public int CategoryId { get; set; }
-
-        public Market Market { get; set; }
         public int MarketId { get; set; }
     }
 }
