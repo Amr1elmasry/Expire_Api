@@ -140,6 +140,23 @@ namespace Expire_Api.Services
             return await query.ToListAsync();
         }
 
+        public async Task<T> FindByIdWithCustomData(int id, string Include)
+        {
+            var entity = await _Context.Set<T>().FindAsync(id);
+            if (entity == null) return null;
+            _Context.Entry(entity).Collection(Include).Load();
+            _Context.Entry(entity).State = EntityState.Detached;
+            return entity;
+        }
+        public async Task<T> FindByIdWithCustomData(string id, string Include)
+        {
+            var entity = await _Context.Set<T>().FindAsync(id);
+            if (entity == null) return null;
+            _Context.Entry(entity).Collection(Include).Load();
+            _Context.Entry(entity).State = EntityState.Detached;
+            return entity;
+        }
+
         public void CommitChanges()
         {
             _Context.SaveChanges();
@@ -150,7 +167,7 @@ namespace Expire_Api.Services
                                 .Where(p => (typeof(IEnumerable).IsAssignableFrom(p.PropertyType)
                                     && p.PropertyType != typeof(string))
                                     && p.PropertyType != typeof(byte[])
-                                    || p.PropertyType.Namespace == entityType.Namespace)
+                                    || (p.PropertyType.Namespace == entityType.Namespace) && p.PropertyType != typeof(CurrencyCode))
                                 .Select(p => p.Name)
                                 .ToList();
             return col;

@@ -18,7 +18,8 @@ namespace Expire_Api.Interface
         Task<T> FindWithData(Expression<Func<T, bool>> criteria);
         Task<IEnumerable<T>> FindAll(Expression<Func<T, bool>> criteria);
         Task<IEnumerable<T>> FindAllWithData(Expression<Func<T, bool>> criteria);
-
+        Task<T> FindByIdWithCustomData(int id, string Include);
+        Task<T> FindByIdWithCustomData(string id, string Include);
         List<string> GetCollections(Type entityType);
 
         void CommitChanges();

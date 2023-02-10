@@ -1,4 +1,5 @@
-﻿using Expire_Api.DTOS.Seller;
+﻿using Expire_Api.DTOS.Product;
+using Expire_Api.DTOS.Seller;
 using Expire_Api.Models;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,8 +12,6 @@ namespace Expire_Api.DTOS.Market
 
         [MaxLength(100)]
         public string? Name { get; set; }
-
-        public ICollection<Product> Products { get; set; }
 
         public string SellerId { get; set; }
     }
