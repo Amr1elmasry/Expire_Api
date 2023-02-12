@@ -14,7 +14,7 @@ namespace Expire_Api.DTOS.Product
         public string BarCode { get; set; }
 
         public DateTime ExpireData { get; set; }
-        public int DayesToReminderBeforExpire { get; set; }
+        public int TimeToExpire { get; set; }
 
     }
 }
