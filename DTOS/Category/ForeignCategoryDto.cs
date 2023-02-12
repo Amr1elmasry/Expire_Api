@@ -12,6 +12,8 @@ namespace Expire_Api.DTOS.Category
 
         [Required, MaxLength(100)]
         public string? Name { get; set; }
+        [Required]
+        public int DayesToReminderBeforExpire { get; set; }
         public int MarketId { get; set; }
         public string SellerId { get; set; }
     }

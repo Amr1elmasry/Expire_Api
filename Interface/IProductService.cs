@@ -10,6 +10,7 @@ namespace Expire_Api.Interface
         Task<ReturnProduct> AddProduct(CreateProductDto productDto);
         Task<ReturnProduct> UpdateProduct(UpdateProductDto productDto);
         Task<ReturnProduct> DeleteProduct(DeleteProductDto productDto);
-        Task<IList<ProductsExpireList>> GetExpiryProducts(string SellerId);
+        Task<IList<ProductsExpireList>> GetReminderExpiryProducts(string SellerId);
+        Task<IList<ProductsExpireList>> GetAllExpiryProducts(string SellerId);
     }
 }

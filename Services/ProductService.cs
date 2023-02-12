@@ -127,17 +127,60 @@ namespace Expire_Api.Services
             return returnProduct;
         }
 
-        public async Task<IList<ProductsExpireList>> GetExpiryProducts(string SellerId)
+        public async Task<IList<ProductsExpireList>> GetReminderExpiryProducts(string SellerId)
         {
             IList<ProductsExpireList> listOfProducts = new List<ProductsExpireList>();
             Expression<Func<Product, bool>> expression = p => p.SellerId == SellerId &&
-                EF.Functions.DateDiffDay(DateTime.Now.Date, p.ExpireData) <= p.DayesToReminderBeforExpire;
+                EF.Functions.DateDiffDay(DateTime.Now.Date , p.ExpireData) <= p.DayesToReminderBeforExpire+1 &&
+                EF.Functions.DateDiffDay(DateTime.Now.Date, p.ExpireData) >= 0;
             var products = await FindAll(expression);
             if (products is not null)
             {
                 foreach (var product in products)
                 {
-                    listOfProducts.Add(product.Adapt<ProductsExpireList>());
+                    if (product.ExpireData != DateTime.MinValue)
+                    {
+                        var time = (int)(product.ExpireData - DateTime.Now.Date).TotalDays;
+                        if ((int)time == product.DayesToReminderBeforExpire ||
+                                (!listOfProducts.Any(p => p.Id == product.Id)
+                                && (time == product.DayesToReminderBeforExpire / 2 || time <= 3)))
+                        {
+                            listOfProducts.Add(new ProductsExpireList
+                            {
+                                Id = product.Id,
+                                BarCode = product.BarCode,
+                                Name = product.Name,
+                                ExpireData = product.ExpireData,
+                                TimeToExpire = time
+                            });
+                            product.DayesToReminderBeforExpire /= 2;
+                        }
+                    }
+                }
+            }
+            return listOfProducts;
+        }
+
+        public async Task<IList<ProductsExpireList>> GetAllExpiryProducts(string SellerId)
+        {
+            IList<ProductsExpireList> listOfProducts = new List<ProductsExpireList>();
+            Expression<Func<Product, bool>> expression = p => p.SellerId == SellerId &&
+                EF.Functions.DateDiffDay(DateTime.Now.Date, p.ExpireData) <= p.DayesToReminderBeforExpire +1 &&
+                EF.Functions.DateDiffDay(DateTime.Now.Date, p.ExpireData) >= 0;
+            var products = await FindAll(expression);
+            if (products != null)
+            {
+                foreach (var product in products)
+                {
+                    var time = (int)(product.ExpireData - DateTime.Now.Date).TotalDays;
+                    listOfProducts.Add(new ProductsExpireList
+                    {
+                        Id = product.Id,
+                        BarCode = product.BarCode,
+                        Name = product.Name,
+                        ExpireData = product.ExpireData,
+                        TimeToExpire = time
+                    });
                 }
             }
             return listOfProducts;

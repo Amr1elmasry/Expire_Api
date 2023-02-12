@@ -76,10 +76,18 @@ namespace Expire_Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet("GetExpiryProducts")]
-        public async Task<IActionResult> GetExpiryProducts(string sellerId)
+        [HttpGet("GetReminderExpiryProducts")]
+        public async Task<IActionResult> GetReminderExpiryProducts(string sellerId)
         {
-            var products = await _productService.GetExpiryProducts(sellerId);
+            var products = await _productService.GetReminderExpiryProducts(sellerId);
+            if (products == null) return NotFound();
+            return Ok(products);
+        }
+
+        [HttpGet("GetAllExpiryProducts")]
+        public async Task<IActionResult> GetAllExpiryProducts(string sellerId)
+        {
+            var products = await _productService.GetAllExpiryProducts(sellerId);
             if (products == null) return NotFound();
             return Ok(products);
         }
