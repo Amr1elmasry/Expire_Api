@@ -20,7 +20,8 @@ GET /api/Product/GetProductsInMarket
 GET /api/Product/GetProductsInMarketWithData
 GET /api/Product/FindProductById
 GET /api/Product/FindProductByIdWithData
-GET /api/Product/GetExpiryProducts
+GET /api/Product/GetReminderExpiryProducts
+GET /api/Product/GetAllExpiryProducts
 POST /api/Product/AddProductToMarket
 PUT /api/Product/UpdateProduct
 ```
