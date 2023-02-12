@@ -10,6 +10,9 @@ namespace Expire_Api.Models
 
         [Required, MaxLength(100)]
         public string? Name { get; set; }
+
+        [Required]
+        public int DayesToReminderBeforExpire { get; set; }
         public ICollection<Product> Products { get; set; }
 
         public Market Market { get; set; }
