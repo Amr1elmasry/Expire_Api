@@ -14,9 +14,15 @@ POST /api/Auth/AddNewRole
 
 ## Product
 ```http
+GET /api/Product/GetAll
+GET /api/Product/GetAllWithData
 GET /api/Product/GetProductsInMarket
 GET /api/Product/GetProductsInMarketWithData
+GET /api/Product/FindProductById
+GET /api/Product/FindProductByIdWithData
+GET /api/Product/GetExpiryProducts
 POST /api/Product/AddProductToMarket
+PUT /api/Product/UpdateProduct
 ```
 
 ## Category
