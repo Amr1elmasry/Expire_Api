@@ -19,6 +19,10 @@ namespace Expire_Api.DTOS.Product
         [Required]
         public CurrencyCode Currency { get; set; }
         public int Quantity { get; set; }
+        public DateTime CreatedAt { get; set; } 
+        public DateTime ExpireData { get; set; }
+        public int DayesToReminderBeforExpire { get; set; }
+
 
         public int CategoryId { get; set; }
         public int MarketId { get; set; }

@@ -1,10 +1,16 @@
-﻿using Expire_Api.DTOS.Product;
+﻿using Expire_Api.DTOS.Category;
+using Expire_Api.DTOS.Product;
 using Expire_Api.Interface;
 using Expire_Api.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Linq.Expressions;
 using System.Reflection.Emit;
+using System.Data.Common;
+using Microsoft.EntityFrameworkCore;
+
+
 
 namespace Expire_Api.Services
 {
@@ -22,10 +28,10 @@ namespace Expire_Api.Services
 
         public async Task<List<Product>> GetProductsOfMarket(int marketId)
         {
-            Expression<Func<Product, bool>> expression = p=> p.MarketId == marketId;
+            Expression<Func<Product, bool>> expression = p => p.MarketId == marketId;
             var products = await FindAll(expression);
-            if (products is null || !products.Any()) 
-                    return null;
+            if (products is null || !products.Any())
+                return null;
             return products.ToList();
         }
 
@@ -38,38 +44,103 @@ namespace Expire_Api.Services
             return products.ToList();
         }
 
-        private async Task<ReturnProduct> PostProductValidate (CreateProductDto productDto)
+        private async Task<ReturnProduct> CreateProductValidate(CreateProductDto productDto)
         {
             var returnProduct = new ReturnProduct { Messege = string.Empty };
             var market = await _marketService.FindByIdWithCustomData(productDto.MarketId, "Products");
-            if (market == null) returnProduct.Messege = "No market found with this Id";
+            var product = productDto.Adapt<Product>();
+            if (market == null || market.SellerId != productDto.SellerId) returnProduct.Messege = "No market found with this data";
             else if (market.Products.Any(p => p.Name == productDto.Name))
                 returnProduct.Messege = "There is another product with same name";
-            else if (market.Products.Any(p=>p.BarCode == productDto.BarCode)) 
+            else if (market.Products.Any(p => p.BarCode == productDto.BarCode))
                 returnProduct.Messege = "There is another product with same barcode";
             else
             {
                 var category = await _categoryService.FindById(productDto.CategoryId);
                 if (category is null) returnProduct.Messege = "No category found with this Id";
                 else if (category.MarketId != productDto.MarketId)
-                    returnProduct.Messege = "This market owned by another seller";
+                    returnProduct.Messege = "This category not exists";
+                else
+                {
+                    if (product.DayesToReminderBeforExpire is 0)
+                        product.DayesToReminderBeforExpire = category.DayesToReminderBeforExpire;
+                    returnProduct.Product = product;
+
+                }
             }
+
             return returnProduct;
         }
 
         public async Task<ReturnProduct> AddProduct(CreateProductDto productDto)
         {
-            var product = productDto.Adapt<Product>();
-            var validate = await PostProductValidate(productDto);
+            var validate = await CreateProductValidate(productDto);
             if (validate.Messege == string.Empty)
             {
-                await Add(product);
+                await Add(validate.Product);
+                CommitChanges();
+            }
+            return validate;
+        }
+
+        private async Task<ReturnProduct> UpdateProductValidate(UpdateProductDto productDto)
+        {
+            var returnProduct = new ReturnProduct { Messege = string.Empty };
+            var product = productDto.Adapt<Product>();
+            var market = await _marketService.FindByIdWithCustomData(product.MarketId, "Categories");
+            var check = await FindById(product.Id);
+            if (check == null) returnProduct.Messege = "No product was found with this id";
+            else if (JsonConvert.SerializeObject(product) == JsonConvert.SerializeObject(check)) returnProduct.Messege = "No Changes are found";
+            else if (productDto.MarketId != check.MarketId || productDto.SellerId != check.SellerId)
+                returnProduct.Messege = "You can't change sellerId or Market Id";
+            else if (!market.Categories.Any(c => c.Id == productDto.CategoryId))
+                returnProduct.Messege = "Your market doesn't contins this category";
+            return returnProduct;
+
+        }
+
+        public async Task<ReturnProduct> UpdateProduct(UpdateProductDto productDto)
+        {
+            var product = productDto.Adapt<Product>();
+            var validate = await UpdateProductValidate(productDto);
+            if (validate.Messege == string.Empty)
+            {
+                await Update(product);
                 CommitChanges();
                 validate.Product = product;
             }
             return validate;
-
         }
 
+        public async Task<ReturnProduct> DeleteProduct(DeleteProductDto productDto)
+        {
+            var returnProduct = new ReturnProduct { Messege = string.Empty };
+            var product = await FindById(productDto.Id);
+            if (product == null) returnProduct.Messege = "No product found with this Id";
+            else if (product.SellerId != productDto.SellerId) returnProduct.Messege = "Error in sellerId";
+            else
+            {
+                await Delete(product);
+                CommitChanges();
+                returnProduct.Product = product;
+            }
+            return returnProduct;
+        }
+
+        public async Task<IList<ProductsExpireList>> GetExpiryProducts(string SellerId)
+        {
+            IList<ProductsExpireList> listOfProducts = new List<ProductsExpireList>();
+            Expression<Func<Product, bool>> expression = p => p.SellerId == SellerId &&
+                EF.Functions.DateDiffDay(DateTime.Now.Date, p.ExpireData) <= p.DayesToReminderBeforExpire;
+            var products = await FindAll(expression);
+            if (products is not null)
+            {
+                foreach (var product in products)
+                {
+                    listOfProducts.Add(product.Adapt<ProductsExpireList>());
+                }
+            }
+            return listOfProducts;
+        }
     }
 }

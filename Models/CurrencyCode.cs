@@ -7,9 +7,10 @@ namespace Expire_Api.Models
 {
     public enum CurrencyCode
     {
-        AED = 784,
-        AFN = 971,
         EGP = 818,
+        AED = 784,
+        AFN = 971
+        
 
     }
 }

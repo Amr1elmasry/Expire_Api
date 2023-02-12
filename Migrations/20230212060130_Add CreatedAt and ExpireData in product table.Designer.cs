@@ -4,6 +4,7 @@ using Expire_Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExpireApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230212060130_Add CreatedAt and ExpireData in product table")]
+    partial class AddCreatedAtandExpireDatainproducttable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,9 +120,6 @@ namespace ExpireApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("DayesToReminderBeforExpire")
-                        .HasColumnType("int");
-
                     b.Property<int>("MarketId")
                         .HasColumnType("int");
 
@@ -138,7 +138,7 @@ namespace ExpireApi.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Expire_Api.Models.Market", b =>
@@ -161,7 +161,7 @@ namespace ExpireApi.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("Markets", (string)null);
+                    b.ToTable("Markets");
                 });
 
             modelBuilder.Entity("Expire_Api.Models.Product", b =>
@@ -187,9 +187,6 @@ namespace ExpireApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(max)")
                         .HasDefaultValue("EGP");
-
-                    b.Property<int>("DayesToReminderBeforExpire")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("ExpireData")
                         .HasColumnType("datetime2");
@@ -219,7 +216,7 @@ namespace ExpireApi.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -394,7 +391,7 @@ namespace ExpireApi.Migrations
 
             modelBuilder.Entity("Expire_Api.Models.Product", b =>
                 {
-                    b.HasOne("Expire_Api.Models.Category", null)
+                    b.HasOne("Expire_Api.Models.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -411,6 +408,8 @@ namespace ExpireApi.Migrations
                         .HasForeignKey("SellerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Category");
 
                     b.Navigation("Market");
 
