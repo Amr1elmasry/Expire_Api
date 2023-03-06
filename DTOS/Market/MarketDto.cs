@@ -1,4 +1,5 @@
-﻿using Expire_Api.DTOS.Product;
+﻿using Expire_Api.DTOS.Category;
+using Expire_Api.DTOS.Product;
 using Expire_Api.DTOS.Seller;
 using Expire_Api.Mapping;
 using Expire_Api.Models;
@@ -15,6 +16,7 @@ namespace Expire_Api.DTOS.Market
         public string? Name { get; set; }
 
         public ICollection<ForeignProductDto> Products { get; set; }
+        public ICollection<ForeignCategoryDto> Categories { get; set; }
 
         public SellerDto Seller { get; set; }
         public string SellerId { get; set; }

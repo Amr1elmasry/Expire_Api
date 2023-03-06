@@ -96,6 +96,7 @@ namespace Expire_Api.Services
 
             return new SellerReturnDto
             {
+                Id = seller.Id,
                 Email = seller.Email,
                 IsAuth = true,
                 Roles = new List<string> { RoleNames.SellerRole },
@@ -130,6 +131,7 @@ namespace Expire_Api.Services
             var jwtSecurityToken = await CreateJwtToken(user);
             var roles = await _userManager.GetRolesAsync(user);
 
+            sellerReturnDto.Id = user.Id;
             sellerReturnDto.IsAuth = true;
             sellerReturnDto.Email = user.Email;
             sellerReturnDto.UserName = user.UserName;
@@ -137,6 +139,7 @@ namespace Expire_Api.Services
             sellerReturnDto.Massage = "Login Successfully";
             sellerReturnDto.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
             sellerReturnDto.ExpiresOn = jwtSecurityToken.ValidTo;
+            await _signInManager.PasswordSignInAsync(user, sellerLogin.password, true, false);
             return sellerReturnDto;
         }
     }

@@ -12,6 +12,7 @@ namespace Expire_Api.Interface
 
         Task<IEnumerable<Market>> GetMarketsOfSeller(string sellerId);
         Task<IEnumerable<Market>> GetMarketsOfSellerWithData(string sellerId);
+        Task<int> GetCountOfMarkets(string sellerId);
         Task<ReturnMarket> AddMarket(PostMarketDto marketDto);
         Task<ReturnMarket> UpdateMarket(UpdateMarketDto marketDto);
         Task<ReturnMarket> DeleteMarket(DeleteMarketDto marketDto);

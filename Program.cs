@@ -3,8 +3,6 @@ using Expire_Api.Models;
 using Expire_Api.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Expire_Api.Mapping;
 using Expire_Api.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -60,6 +58,11 @@ builder.Services.AddAuthentication(options => {
     };
 });
 
+//add cors service to test api to test it 
+builder.Services.AddCors(policyBuilder =>
+    policyBuilder.AddDefaultPolicy(policy =>
+        policy.WithOrigins("*").AllowAnyMethod().AllowAnyHeader())
+);
 
 builder.Services.AddScoped<ISellerService, SellerService>();
 builder.Services.AddScoped<IMarketService, MarketService>();
@@ -87,11 +90,26 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
+app.UseCors("CORSPolicy");
+
+app.UseRouting();
+
 app.UseAuthorization();
 
+
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.MapControllers();
+
+app.UseCors();
+
 
 app.Run();

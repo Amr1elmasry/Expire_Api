@@ -75,6 +75,13 @@ namespace Expire_Api.Controllers
             return Ok(result);
         }
 
+        [HttpGet("GetCountOfMarkets")]
+        public async Task<IActionResult> GetCountOfMarkets(string sellerId)
+        {
+            var count = await _marketService.GetCountOfMarkets(sellerId);
+            return Ok(count);
+        }
+
 
         [HttpPost("AddMarket")]
         public async Task<IActionResult> AddMarket([FromBody] PostMarketDto marketDto)

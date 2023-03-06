@@ -7,6 +7,8 @@ namespace Expire_Api.Interface
     {
         Task<List<Product>> GetProductsOfMarket(int marketId);
         Task<List<Product>> GetProductsOfMarketWithData(int marketId);
+        Task<List<Product>> GetProductsOfMarketPagination(int marketId, int countInPage, int currentPage);
+        Task<int> GetCountOfProducts(string sellerId);
         Task<ReturnProduct> AddProduct(CreateProductDto productDto);
         Task<ReturnProduct> UpdateProduct(UpdateProductDto productDto);
         Task<ReturnProduct> DeleteProduct(DeleteProductDto productDto);

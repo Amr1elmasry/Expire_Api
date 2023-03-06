@@ -2,6 +2,7 @@
 using Expire_Api.DTOS.Product;
 using Expire_Api.Interface;
 using Expire_Api.Models;
+using Expire_Api.Services;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -81,7 +82,8 @@ namespace Expire_Api.Controllers
         {
             var products = await _productService.GetReminderExpiryProducts(sellerId);
             if (products == null) return NotFound();
-            return Ok(products);
+            var result = products.Adapt<IEnumerable<ProductDto>>();
+            return Ok(result);
         }
 
         [HttpGet("GetAllExpiryProducts")]
@@ -89,7 +91,24 @@ namespace Expire_Api.Controllers
         {
             var products = await _productService.GetAllExpiryProducts(sellerId);
             if (products == null) return NotFound();
-            return Ok(products);
+            var result = products.Adapt<IEnumerable<ProductDto>>();
+            return Ok(result);
+        }
+
+        [HttpGet("GetProductsOfMarketPagination")]
+        public async Task<IActionResult> GetProductsOfMarketPagination(int marketId, int countInPage, int currentPage)
+        {
+            var products = await _productService.GetProductsOfMarketPagination(marketId, countInPage, currentPage);
+            if (products == null) return NotFound();
+            var result = products.Adapt<IEnumerable<ProductDto>>();
+            return Ok(result);
+        }
+
+        [HttpGet("GetCountOfProducts")]
+        public async Task<IActionResult> GetCountOfProducts(string sellerId)
+        {
+            var count = await _productService.GetCountOfProducts(sellerId);
+            return Ok(count);
         }
 
         [HttpPost("AddProductToMarket")]

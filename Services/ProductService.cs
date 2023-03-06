@@ -44,6 +44,25 @@ namespace Expire_Api.Services
             return products.ToList();
         }
 
+        public async Task<List<Product>> GetProductsOfMarketPagination(int marketId , int countInPage, int currentPage)
+        {
+            Expression<Func<Product, bool>> expression = p => p.MarketId == marketId;
+            var products = await _context.Products.Where(expression)
+                .Skip(countInPage * (currentPage-1))
+                .Take(countInPage).ToListAsync();
+            if (products is null || !products.Any())
+                return null;
+            return products.ToList();
+        }
+
+
+        public async Task<int> GetCountOfProducts(string sellerId)
+        {
+            Expression<Func<Product, bool>> criteria = d => d.SellerId == sellerId;
+            var products = await CountWithCriteria(criteria);
+            return products;
+        }
+
         private async Task<ReturnProduct> CreateProductValidate(CreateProductDto productDto)
         {
             var returnProduct = new ReturnProduct { Messege = string.Empty };
@@ -135,7 +154,7 @@ namespace Expire_Api.Services
                 EF.Functions.DateDiffDay(DateTime.Now.Date, p.ExpireData) >= 0;
             var products = await FindAll(expression);
             if (products is not null)
-            {
+            { 
                 foreach (var product in products)
                 {
                     if (product.ExpireData != DateTime.MinValue)

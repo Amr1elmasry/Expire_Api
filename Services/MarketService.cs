@@ -50,6 +50,13 @@ namespace Expire_Api.Services
             return markets;
         }
 
+        public async Task<int> GetCountOfMarkets(string sellerId)
+        {
+            Expression<Func<Market, bool>> criteria = d => d.SellerId == sellerId;
+            var markets = await CountWithCriteria(criteria);
+            return markets;
+        }
+
         public async Task<ReturnMarket> AddMarket(PostMarketDto marketDto)
         {
             var returnMarket = new ReturnMarket { Messege= string.Empty };

@@ -14,6 +14,7 @@ namespace Expire_Api.Interface
         Task<IEnumerable<T>> GetAll();
         Task<IEnumerable<T>> GetAllWithData();
         Task<int> Count();
+        Task<int> CountWithCriteria(Expression<Func<T, bool>> criteria);
         Task<T> Find(Expression<Func<T, bool>> criteria);
         Task<T> FindWithData(Expression<Func<T, bool>> criteria);
         Task<IEnumerable<T>> FindAll(Expression<Func<T, bool>> criteria);

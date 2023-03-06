@@ -1,6 +1,7 @@
 ﻿using Expire_Api.DTOS.Category;
 using Expire_Api.Interface;
 using Expire_Api.Models;
+using Mapster;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
@@ -48,12 +49,7 @@ namespace Expire_Api.Services
             else if(categoryIsExist) returnMarket.Messege = "There is another category with the same name";
             else
             {
-                var category = new Category
-                {
-                    MarketId = categoryDto.MarketId,
-                    SellerId = categoryDto.SellerId,
-                    Name = categoryDto.Name,
-                };
+                var category = categoryDto.Adapt<Category>();
                 await Add(category);
                 CommitChanges();
                 returnMarket.Category = category;
@@ -91,7 +87,7 @@ namespace Expire_Api.Services
             {
                 Messege = string.Empty,
             };
-            var category = await FindById(categoryDto.Id);
+            var category = await FindByIdWithData(categoryDto.Id);
             if (category == null) returnCategory.Messege = "No category found with this Id";
             else if (category.SellerId != categoryDto.SellerId) returnCategory.Messege = "Error in sellerId";
             else

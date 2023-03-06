@@ -74,7 +74,6 @@ namespace Expire_Api.Services
         {
             var col = GetCollections(typeof(T));
             var entry = await FindById(id);
-            var re = _Context.Entry(entry);
             IQueryable<T> query = _Context.Set<T>();
             foreach (var inc in col)
             {
@@ -84,6 +83,11 @@ namespace Expire_Api.Services
             if (entity == null) return null;
             _Context.Entry(entity).State = EntityState.Detached;
             return entity;
+        }
+
+        public async Task<int> CountWithCriteria(Expression<Func<T, bool>> criteria)
+        {
+            return await _Context.Set<T>().Where(criteria).CountAsync();
         }
 
         public async Task<int> Count()
